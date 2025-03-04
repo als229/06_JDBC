@@ -72,5 +72,7 @@ public class JDBCExample6 {
 			e.printStackTrace();
 		}
 		
+		// test 추가
+		
 	}
 }
