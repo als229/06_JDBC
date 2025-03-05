@@ -33,6 +33,7 @@ public class JDBCExample1 {
 		 * 3) ResultSet
 		 * 	- SELECT 조회 결과를 저장하고 다루는 객체
 		 * 	- 다룰 때 CURSOR를 이용해 1행 씩 접근!
+		 * 	- 조회된 행들의 집합체
 		 * 
 		 * 4) DriverManager 클래스
 		 * 	- DB 연결 정보와 JDBC 드라이버를 이용해서 

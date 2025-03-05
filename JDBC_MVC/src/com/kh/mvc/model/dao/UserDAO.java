@@ -1,10 +1,15 @@
 package com.kh.mvc.model.dao;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.kh.mvc.model.dto.UserDTO;
+import com.kh.mvc.util.JdbcUtil;
 
 /**
  * DAO (Data Access Object)
@@ -16,6 +21,10 @@ import com.kh.mvc.model.dto.UserDTO;
  * DB에 직접 접근한 후 SQL문을 수행하고 결과받기(JDBC)
  */
 public class UserDAO {
+	
+	private final String URL = "jdbc:oracle:thin:@112.221.156.34:12345:XE";
+	private final String USERNAME = "KH02_KKM";
+	private final String USERPW = "KH1234";
 
 	/* JDBC 용 객체
 	 * 
@@ -44,30 +53,121 @@ public class UserDAO {
 	 * 				SELECT 	> 6_1에서 만든거
 	 * 				DML 	> 처리된 행의 개수
 	 */
-	public List<UserDTO> findAll() {
+	
+//	static {
+//		try {
+//			Class.forName("oracle.jdbc.driver.OracleDriver");
+//		} catch (ClassNotFoundException e) {
+//			System.out.println("ojdbc 확인"
+//					+ "\n 오타 확인~");
+//		}
+//	}
+	public List<UserDTO> findAll(Connection conn) {
 		
 		/* VO / DTO / Entity
-		 * 
+		 * 값을 불변을 위해 / 값을 담기 위해 / ?
+		 * 공통은 테이블의 한 행을 담기 위해 사용
+		 *  
 		 * 1명의 회원의 정보는 1개의 UserDTO객체의 필드에 값을 담아야겠다.
 		 * 
 		 * 문제점 : userDTO가 몇개가 나올지 알 수 없음
 		 */
 		
-		List<UserDTO> list = new ArrayList();
+		List<UserDTO> list = new ArrayList<UserDTO>();
 		
-		String sql = "SELEC"
-						+ "USER_NO"
-						+ ", USER_ID"
-						+ ", USER_PW"
-						+ ", USER_NAME"
-						+ ", ENROLL_DATE"
-				+ "FROM"
-					+ "TB_USER"
-				+ "ORDER"
-					+ "BY"
-						+ "ENROLL_DATE DESC";
+		String sql = "SELECT "
+						+ "USER_NO "
+						+ ", USER_ID "
+						+ ", USER_PW "
+						+ ", USER_NAME "
+						+ ", ENROLL_DATE "
+					+ "FROM "
+						+ "TB_USER "
+					+ "ORDER "
+						+ "BY "
+							+ "ENROLL_DATE DESC ";
 		
+		// heap에 올라가는 애들은 비어있을 수 없음.
+		// null 을 넣어줘야함.
+		// null 을 안넣어주면 혹시 값이 안들어갔을때 close가 실행되지 못할수도 있음.
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
+			
+			while(rset.next()) {
+				UserDTO user = new UserDTO();
+				
+				user.setUserNo(rset.getInt("USER_NO"));
+				user.setUserId(rset.getString("USER_ID"));
+				user.setUserPw(rset.getString("USER_PW"));
+				user.setUserName(rset.getString("USER_NAME"));
+				user.setEnrollDate(rset.getDate("ENROLL_DATE"));
+				
+				list.add(user);
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("오타 확인 바람~");
+		} finally {
+			try {
+				if (rset != null) rset.close();
+				JdbcUtil.close(pstmt);
+				if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return list;
+	}
+	
+	/**
+	 * @param user 사용자가 입력한 아이디 / 비밀번호 / 이름이 각각 필드에 대입되어 있음
+	 * @return 아직 뭐 돌려줄지 안정함
+	 */
+	public int insertUser(UserDTO user) {
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		String sql = "INSERT "
+					+ "INTO "
+						+ "TB_USER "
+					+ "VALUES "
+						+ "("
+						+ "SEQ_USER_NO.NEXTVAL "
+						+ ", ? "
+						+ ", ? "
+						+ ", ? "
+						+ ", SYSDATE "
+						+ ")";
+		int result = 0;
+		
+		try {
+			conn = DriverManager.getConnection(URL, USERNAME, USERPW);
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, user.getUserId());
+			pstmt.setString(2, user.getUserPw());
+			pstmt.setString(3, user.getUserName());
+
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null && !pstmt.isClosed()) pstmt.close();
+				if (conn != null && !conn.isClosed()) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return result;
 	}
 	
 }
