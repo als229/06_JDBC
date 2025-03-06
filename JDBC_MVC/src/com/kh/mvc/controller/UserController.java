@@ -13,7 +13,6 @@ import com.kh.mvc.model.service.MemberService;
  */
 public class UserController {
 
-	private UserDAO userDao = new UserDAO();
 	private MemberService userService = new MemberService();
 	
 	public List<UserDTO> findAll() {
@@ -30,7 +29,40 @@ public class UserController {
 		user.setUserPw(userPw);
 		user.setUserName(userName);
 		
-		return userDao.insertUser(user);
+		return userService.insertUser(user);
+	}
+	
+	public UserDTO selectUserNo(int userNo) {
+		return userService.selectUserNo(userNo);
+	}
+	
+	public UserDTO selectUserId(String userId) {
+		return userService.selectUserId(userId);
+	}
+	
+	public UserDTO selectUserPw(String userId , String userPw) {
+		UserDTO user = new UserDTO();
+		user.setUserId(userId);
+		user.setUserPw(userPw);
+		
+		return userService.selectUserPw(user);
+	}
+	
+	public int updatePw(String userId, String userPw) {
+		UserDTO user = new UserDTO();
+		user.setUserId(userId);
+		user.setUserPw(userPw);
+		return userService.updatePw(user);
+	}
+	
+	public int deleteUser(String userId, String userPw) {
+		UserDTO user = new UserDTO();
+		user.setUserId(userId);
+		user.setUserPw(userPw);
+		
+		int result = userService.deleteUser(user);
+		
+		return result;
 	}
 	
 }

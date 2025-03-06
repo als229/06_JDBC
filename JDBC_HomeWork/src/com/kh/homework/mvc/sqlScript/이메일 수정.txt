@@ -1,0 +1,3 @@
+UPDATE EMPLOYEE SET    
+	EMAIL = ?   
+WHERE EMP_ID = ?  

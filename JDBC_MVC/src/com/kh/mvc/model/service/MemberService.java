@@ -1,6 +1,7 @@
 package com.kh.mvc.model.service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import com.kh.mvc.model.dao.UserDAO;
@@ -17,11 +18,90 @@ public class MemberService {
 	private UserDAO userDao = new UserDAO();
 
 	public List<UserDTO> findAll(){
-		
 		Connection conn = JdbcUtil.getConnection();
 		
 		List<UserDTO> list = userDao.findAll(conn);
 		
+		JdbcUtil.close(conn);
+		
 		return list;
 	};
+	
+	public int insertUser(UserDTO user) {
+		Connection conn = JdbcUtil.getConnection();
+		
+		int result = userDao.insertUser(user, conn);
+		
+		if(result > 0) {
+			JdbcUtil.commit(conn);
+		}else {
+			JdbcUtil.rollback(conn);
+		}
+		JdbcUtil.close(conn);
+
+		return result;
+	}
+	
+	public UserDTO selectUserNo(int userNo) {
+		Connection conn = JdbcUtil.getConnection();
+
+		UserDTO user = userDao.selectUserNo(userNo, conn);
+		
+		JdbcUtil.close(conn);
+		
+		return user;
+	}
+	
+	public UserDTO selectUserId(String userId) {
+		Connection conn = JdbcUtil.getConnection();
+		
+		UserDTO user = userDao.selectUserId(userId, conn);
+		
+		JdbcUtil.close(conn);
+		
+		return user;
+	}
+	
+	public UserDTO selectUserPw(UserDTO inputUser) {
+		Connection conn = JdbcUtil.getConnection();
+		
+		UserDTO user = userDao.selectUserPw(inputUser, conn);
+		
+		JdbcUtil.close(conn);
+		
+		return user;
+	}
+	
+	public int updatePw(UserDTO user) {
+		Connection conn = JdbcUtil.getConnection();
+		
+		int result = userDao.updatePw(user, conn);
+		
+		if(result > 0) {
+			JdbcUtil.commit(conn);
+		}else {
+			JdbcUtil.rollback(conn);
+		}
+		
+		JdbcUtil.close(conn);
+		
+		return result;
+	}
+	
+	public int deleteUser(UserDTO user) {
+		Connection conn = JdbcUtil.getConnection();
+		
+		int result = userDao.deleteUser(user, conn);
+		
+		if(result > 0) {
+			JdbcUtil.commit(conn);
+		}else {
+			JdbcUtil.rollback(conn);
+		}
+		
+		JdbcUtil.close(conn);
+		
+		return result;
+	}
+	
 }

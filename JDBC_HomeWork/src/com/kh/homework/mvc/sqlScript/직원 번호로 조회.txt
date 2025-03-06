@@ -1,0 +1,9 @@
+SELECT  
+	EMP_ID 
+	, EMP_NAME 
+	, EMP_NO  
+	,EMAIL   
+FROM  
+	EMPLOYEE  
+WHERE  
+	EMP_ID = ? 

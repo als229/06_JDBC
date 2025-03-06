@@ -2,8 +2,10 @@ package com.kh.mvc.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 public class JdbcUtil {
 	
@@ -36,6 +38,7 @@ public class JdbcUtil {
 		
 		try {
 			conn = DriverManager.getConnection(URL, USERNAME, USERPW);
+			conn.setAutoCommit(false);
 			
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -47,6 +50,42 @@ public class JdbcUtil {
 	public static void close(Statement stmt) {
 		try {
 			if( stmt != null && !stmt.isClosed()) stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void close(Connection conn) {
+		try {
+			if( conn != null && !conn.isClosed()) conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void close(ResultSet rs) {
+		try {
+			if( rs != null && !rs.isClosed()) rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void close(Scanner sc) {
+			if( sc != null) sc.close();
+	}
+	
+	public static void commit(Connection conn) {
+		try {
+			conn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void rollback(Connection conn) {
+		try {
+			conn.rollback();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

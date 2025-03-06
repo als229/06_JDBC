@@ -1,0 +1,22 @@
+INSERT INTO EMPLOYEE
+	(
+		EMP_ID
+		, EMP_NAME
+		, EMP_NO
+		, EMAIL
+		, PHONE
+		, HIRE_DATE
+		, JOB_CODE
+		, SAL_LEVEL
+	)
+VALUES
+	(
+		?
+		, ?
+		, ?
+		, ?
+		, ?
+		, SYSDATE
+		,?
+		,?
+	)
